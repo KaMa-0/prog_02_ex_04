@@ -7,6 +7,9 @@ import at.ac.fhcampuswien.fhmdb.database.*;
 import at.ac.fhcampuswien.fhmdb.models.Genre;
 import at.ac.fhcampuswien.fhmdb.models.Movie;
 import at.ac.fhcampuswien.fhmdb.models.SortedState;
+import at.ac.fhcampuswien.fhmdb.states.NotSortedState;
+import at.ac.fhcampuswien.fhmdb.states.SortContext;
+import at.ac.fhcampuswien.fhmdb.states.SortState;
 import at.ac.fhcampuswien.fhmdb.ui.MovieCell;
 import at.ac.fhcampuswien.fhmdb.ui.UserDialog;
 import com.jfoenix.controls.JFXButton;
@@ -50,8 +53,8 @@ public class MovieListController implements Initializable {
     public List<Movie> allMovies;
 
     protected ObservableList<Movie> observableMovies = FXCollections.observableArrayList();
-
-    protected SortedState sortedState;
+    //We replaced sortedState field with sortContext
+    protected SortContext sortContext;
 
     private final ClickEventHandler onAddToWatchlistClicked = (clickedItem) -> {
         if (clickedItem instanceof Movie movie) {
@@ -87,7 +90,8 @@ public class MovieListController implements Initializable {
 
         setMovies(result);
         setMovieList(result);
-        sortedState = SortedState.NONE;
+        //Initialize sort context instead of sortedState
+        sortContext = new SortContext();
     }
 
     private List<Movie> readCache() {
@@ -155,12 +159,24 @@ public class MovieListController implements Initializable {
         observableMovies.addAll(movies);
     }
     public void sortMovies(){
+        sortContext.sortMovies(observableMovies);
+    }
+
+    public void applySortState(SortState state) {
+        sortContext.applySortState(observableMovies, state);
+    }
+
+
+    /*
+    public void sortMovies(){
         if (sortedState == SortedState.NONE || sortedState == SortedState.DESCENDING) {
             sortMovies(SortedState.ASCENDING);
         } else if (sortedState == SortedState.ASCENDING) {
             sortMovies(SortedState.DESCENDING);
         }
     }
+
+
     // sort movies based on sortedState
     // by default sorted state is NONE
     // afterwards it switches between ascending and descending
@@ -173,7 +189,7 @@ public class MovieListController implements Initializable {
             sortedState = SortedState.DESCENDING;
         }
     }
-
+ */
     public List<Movie> filterByQuery(List<Movie> movies, String query){
         if(query == null || query.isEmpty()) return movies;
 
@@ -229,8 +245,9 @@ public class MovieListController implements Initializable {
         setMovieList(movies);
         // applyAllFilters(searchQuery, genre);
 
-        if(sortedState != SortedState.NONE) {
-            sortMovies(sortedState);
+        // Apply current sort state if not in NotSortedState
+        if (!(sortContext.getCurrentState() instanceof NotSortedState)) {
+            sortContext.applySortState(observableMovies, sortContext.getCurrentState());
         }
     }
 
