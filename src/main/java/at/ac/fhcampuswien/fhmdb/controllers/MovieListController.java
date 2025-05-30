@@ -61,7 +61,7 @@ public class MovieListController implements Initializable {
             WatchlistMovieEntity watchlistMovieEntity = new WatchlistMovieEntity(
                     movie.getId());
             try {
-                WatchlistRepository repository = new WatchlistRepository();
+                WatchlistRepository repository = WatchlistRepository.getInstance(); // Instead of new WatchlistRepository(); we can use now getInstance method.
                 repository.addToWatchlist(watchlistMovieEntity);
             } catch (DataBaseException e) {
                 UserDialog dialog = new UserDialog("Database Error", "Could not add movie to watchlist");
@@ -96,7 +96,7 @@ public class MovieListController implements Initializable {
 
     private List<Movie> readCache() {
         try {
-            MovieRepository movieRepository = new MovieRepository();
+            MovieRepository movieRepository = MovieRepository.getInstance(); // Instead of new MovieRepository(); we can use now getInstance method.
             return MovieEntity.toMovies(movieRepository.getAllMovies());
         } catch (DataBaseException e) {
             UserDialog dialog = new UserDialog("DB Error", "Could not load movies from DB");
@@ -108,7 +108,7 @@ public class MovieListController implements Initializable {
     private void writeCache(List<Movie> movies) {
         try {
             // cache movies in db
-            MovieRepository movieRepository = new MovieRepository();
+            MovieRepository movieRepository = MovieRepository.getInstance(); // Instead of new MovieRepository(); we can use now getInstance method.
             movieRepository.removeAll();
             movieRepository.addAllMovies(movies);
 

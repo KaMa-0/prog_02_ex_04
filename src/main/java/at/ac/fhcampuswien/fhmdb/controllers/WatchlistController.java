@@ -29,7 +29,7 @@ public class WatchlistController implements Initializable {
             MovieEntity movieEntity = (MovieEntity) o;
 
             try {
-                WatchlistRepository watchlistRepository = new WatchlistRepository();
+                WatchlistRepository watchlistRepository = WatchlistRepository.getInstance(); // Instead of new WatchlistRepository(); we can use now getInstance method.
                 watchlistRepository.removeFromWatchlist(movieEntity.getApiId());
                 observableWatchlist.remove(movieEntity);
             } catch (DataBaseException e) {
@@ -44,10 +44,10 @@ public class WatchlistController implements Initializable {
     public void initialize(URL url, ResourceBundle resourceBundle) {
         List<WatchlistMovieEntity> watchlist = new ArrayList<>();
         try {
-            watchlistRepository = new WatchlistRepository();
+            watchlistRepository = WatchlistRepository.getInstance(); // Instead of new WatchlistRepository(); we can use now getInstance method.
             watchlist = watchlistRepository.getWatchlist();
 
-            MovieRepository movieRepository = new MovieRepository();
+            MovieRepository movieRepository = MovieRepository.getInstance(); // Instead of new MovieRepository(); we can use now getInstance method.
             List<MovieEntity> movies = new ArrayList<>();
 
             for(WatchlistMovieEntity movie : watchlist) {
