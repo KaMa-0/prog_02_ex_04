@@ -21,7 +21,7 @@ public class MovieAPI {
         }
         return url.toString();
     }
-
+/*
     private static String buildUrl(String query, Genre genre, String releaseYear, String ratingFrom) {
         StringBuilder url = new StringBuilder(URL);
 
@@ -47,19 +47,20 @@ public class MovieAPI {
 
         return url.toString();
     }
+ */
 
     public static List<Movie> getAllMovies() throws MovieApiException {
         return getAllMovies(null, null, null, null);
     }
 
+    // Get movies with filters using Builder Pattern
     public static List<Movie> getAllMovies(String query, Genre genre, String releaseYear, String ratingFrom) throws MovieApiException{
-        String url = buildUrl(query, genre, releaseYear, ratingFrom);
-        Request request = new Request.Builder()
-                .url(url)
+        //Use Builder Pattern to construct the URL
+        String url = new MovieAPIRequestBuilder(URL).query(query).genre(genre).releaseYear(releaseYear).ratingFrom(ratingFrom).build();
+        Request request = new Request.Builder().url(url)
                 .removeHeader("User-Agent")
-                .addHeader("User-Agent", "http.agent")  // needed for the server to accept the request
+                .addHeader("User-Agent", "http.agent") // needed for the server to accept the request
                 .build();
-
         try (Response response = client.newCall(request).execute()) {
             String responseBody = Objects.requireNonNull(response.body()).string();
             Gson gson = new Gson();
@@ -72,11 +73,11 @@ public class MovieAPI {
     }
 
     public Movie requestMovieById(UUID id) throws MovieApiException {
+        /*
         String url = buildUrl(id);
-        Request request = new Request.Builder()
-                .url(url)
-                .build();
-
+         */ //Instead of buildUrl method, we use MovieAPIRequestBuilder
+        String url = new MovieAPIRequestBuilder(URL + "/" + id).build();
+        Request request = new Request.Builder().url(url).build();
         try (Response response = client.newCall(request).execute()) {
             Gson gson = new Gson();
             return gson.fromJson(Objects.requireNonNull(response.body()).string(), Movie.class);
