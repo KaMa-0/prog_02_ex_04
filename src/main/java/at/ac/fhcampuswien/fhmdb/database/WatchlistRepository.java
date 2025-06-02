@@ -49,7 +49,7 @@ public class WatchlistRepository implements Observable {
             return dao.queryForAll();
         } catch (Exception e) {
             e.printStackTrace();
-            throw new DataBaseException("Fehler beim Lesen der Watchlist");
+            throw new DataBaseException("Error while reading the watchlist");
         }
     }
 
@@ -58,16 +58,16 @@ public class WatchlistRepository implements Observable {
             long count = dao.queryBuilder().where().eq("apiId", movie.getApiId()).countOf();
             if (count == 0) {
                 int result = dao.create(movie);
-                notifyObservers("Film erfolgreich zur Watchlist hinzugefügt!");
+                notifyObservers("Movie successfully added to the watchlist!");
                 return result;
             } else {
-                notifyObservers("Film ist bereits in der Watchlist!");
+                notifyObservers("Movie is already in the watchlist!");
                 return 0;
             }
         } catch (Exception e) {
             e.printStackTrace();
-            notifyObservers("Fehler beim Hinzufügen zur Watchlist!");
-            throw new DataBaseException("Fehler beim Hinzufügen zur Watchlist");
+            notifyObservers("Error while adding to the watchlist!");
+            throw new DataBaseException("Error while adding to the watchlist");
         }
     }
 
@@ -75,14 +75,14 @@ public class WatchlistRepository implements Observable {
         try {
             int result = dao.delete(dao.queryBuilder().where().eq("apiId", apiId).query());
             if (result > 0) {
-                notifyObservers("Film erfolgreich aus der Watchlist entfernt!");
+                notifyObservers("Movie successfully removed from the watchlist!");
             } else {
-                notifyObservers("Film nicht in der Watchlist gefunden!");
+                notifyObservers("Movie not found in the watchlist!");
             }
             return result;
         } catch (Exception e) {
-            notifyObservers("Fehler beim Entfernen aus der Watchlist!");
-            throw new DataBaseException("Fehler beim Entfernen aus der Watchlist");
+            notifyObservers("Error while removing from the watchlist!");
+            throw new DataBaseException("Error while removing from the watchlist");
         }
     }
 }
