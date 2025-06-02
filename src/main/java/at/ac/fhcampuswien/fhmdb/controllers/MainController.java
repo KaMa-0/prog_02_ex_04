@@ -1,12 +1,16 @@
 package at.ac.fhcampuswien.fhmdb.controllers;
 
+import at.ac.fhcampuswien.fhmdb.database.WatchlistRepository;
 import at.ac.fhcampuswien.fhmdb.enums.UIComponent;
 import at.ac.fhcampuswien.fhmdb.models.Movie;
+import at.ac.fhcampuswien.fhmdb.observer.Observer;
 import com.jfoenix.controls.*;
 import com.jfoenix.transitions.hamburger.HamburgerBasicCloseTransition;
 import javafx.animation.TranslateTransition;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.control.Alert;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.util.Duration;
@@ -15,7 +19,7 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-public class MainController {
+public class MainController implements Observer {
     @FXML
     public JFXHamburger hamburgerMenu;
 
@@ -37,6 +41,14 @@ public class MainController {
         hamburgerMenu.addEventHandler(MouseEvent.MOUSE_CLICKED, (e) -> {
             toggleMenuDrawer();
         });
+
+        // Observer registrieren
+        try {
+            WatchlistRepository.getInstance().addObserver(this);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         // start with home view
         navigateToMovielist();
     }
@@ -118,5 +130,17 @@ public class MainController {
     @FXML
     public void navigateToMovielist() {
         setContent(UIComponent.MOVIELIST.path);
+    }
+
+    @Override
+    public void update(String message) {
+        // Zeige eine Info-Box im GUI-Thread
+        Platform.runLater(() -> {
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Watchlist-Info");
+            alert.setHeaderText(null);
+            alert.setContentText(message);
+            alert.showAndWait();
+        });
     }
 }
