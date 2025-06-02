@@ -137,7 +137,7 @@ public class MainController implements Observer {
         // Zeige eine Info-Box im GUI-Thread
         Platform.runLater(() -> {
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setTitle("Watchlist-Info");
+            alert.setTitle("Watchlist");
             alert.setHeaderText(null);
             alert.setContentText(message);
             alert.showAndWait();
